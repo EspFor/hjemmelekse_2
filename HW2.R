@@ -158,6 +158,8 @@ celsius_to_fahrenheit(100)
 fahrenheit_to_celsius(celsius_to_fahrenheit(23))
 
 #Oppgave 5.0
+
+#Denne får jeg ikke helt til. Usikker på hvordan jeg best henviser til kol.
 dingdong <-  function(x){
   
 .df = as.data.frame(x)
@@ -175,7 +177,6 @@ return(.df)
 }
 
 dingdong(c(1:100))
-data.frame(c(1:100)).columns
 
 #Oppgave 6.0
 print_all <- function(.data) {
