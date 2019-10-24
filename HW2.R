@@ -7,6 +7,8 @@ library(tidyr)
 library(ranger)
 library(ggplot2)
 
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
 x <- c(1, 2, 3, 10)
 y <- c(4, 5, 6, 23)
 
@@ -113,22 +115,22 @@ lag_histogram <-  function(.data, variabel) {
 
 #Oppgave 3.0
 
-god <-  function(time = lubridate::now()) {
+god_dag <-  function(time = lubridate::now()) {
 
+  hour_int <- as.integer(strftime(time, format="%H"))
+  
   case_when(
-    (strftime(time, format="%H") >= 6) & (strftime(time, format="%H") < 9) ~~ "God morgen",
-    (strftime(time, format="%H") >= 9) & (strftime(time, format="%H") < 12) ~~ "God formiddag",
-    (strftime(time, format="%H") >= 12) & (strftime(time, format="%H") < 19) ~~ "God ettermiddag",
-    (strftime(time, format="%H") >= 19) & (strftime(time, format="%H") < 24) ~~ "God kveld",
-    TRUE ~~ "God natt"
+    (hour_int >= 6) & (hour_int < 9) ~ "God morgen",
+    (hour_int >= 9) & (hour_int < 12) ~ "God formiddag",
+    (hour_int >= 12) & (hour_int < 19) ~ "God ettermiddag",
+    (hour_int >= 19) & (hour_int < 24) ~ "God kveld",
+    TRUE ~ "God natt"
   )
   
 }
 
-strftime(lubridate::now(), format="%H")
-
-strftime(strftime(lubridate::now(), format="%H:%M"),format="%H")
-
+ettermiddag <- as_datetime("20019-09-18 16:15:01")
+god_dag(ettermiddag)
 
 #Oppgave 4.0
 celsius_to_fahrenheit <-  function(celsius = NA) {
@@ -156,39 +158,24 @@ celsius_to_fahrenheit(100)
 fahrenheit_to_celsius(celsius_to_fahrenheit(23))
 
 #Oppgave 5.0
-dingdong <-  function(.x){
+dingdong <-  function(x){
   
-  .x = as.data.frame(x)
-  
-  .x %>%
-    case_when(
-      x %% 3 == 0 & x %% 5 == 0 ~ "Dingdong",
-      x %% 3 == 0 ~ "Ding",
-      x %% 5 == 0 ~ "Dong",
-      TRUE ~ as.character(x)
-      )
-  
-  return(.x)
-}
+.df = as.data.frame(x)
 
-dingdong(c(1:100))
-
-.x = as.data.frame(x)
-
-.x %>%
-  mutate(ding = case_when( 
+.df %>%
+  case_when( 
     {{x}} %% 3 == 0 & {{x}} %% 5 == 0 ~ "Dingdong",
     {{x}} %% 3 == 0 ~ "Ding",
     {{x}} %% 5 == 0 ~ "Dong",
     TRUE ~ as.character({{x}})
   )
-  )
 
-return(.x)
+
+return(.df)
 }
 
 dingdong(c(1:100))
-
+data.frame(c(1:100)).columns
 
 #Oppgave 6.0
 print_all <- function(.data) {
@@ -419,48 +406,3 @@ vector %>%
 #}
 
 #plot_importance(mod_ranger)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
