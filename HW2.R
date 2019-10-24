@@ -6,10 +6,6 @@ library(dplyr)
 library(tidyr)
 library(ranger)
 library(ggplot2)
-library(ggridges)
-library(gganimate)
-library(visNetwork)
-library(knitr)
 
 x <- c(1, 2, 3, 10)
 y <- c(4, 5, 6, 23)
@@ -165,16 +161,34 @@ dingdong <-  function(.x){
   .x = as.data.frame(x)
   
   .x %>%
-    mutate(rain_category = case_when(
-      {{x}} %% 3 = 0 & {{x}} %% 5 = 0 ~ "Dingdong",
-      {{x}} %% 3 = 0 ~ "Ding",
-      {{x}} %% 5 = 0 ~ "Dong",
-      TRUE ~ {{x}}))
+    case_when(
+      x %% 3 == 0 & x %% 5 == 0 ~ "Dingdong",
+      x %% 3 == 0 ~ "Ding",
+      x %% 5 == 0 ~ "Dong",
+      TRUE ~ as.character(x)
+      )
   
-  return(x)
+  return(.x)
 }
 
 dingdong(c(1:100))
+
+.x = as.data.frame(x)
+
+.x %>%
+  mutate(ding = case_when( 
+    {{x}} %% 3 == 0 & {{x}} %% 5 == 0 ~ "Dingdong",
+    {{x}} %% 3 == 0 ~ "Ding",
+    {{x}} %% 5 == 0 ~ "Dong",
+    TRUE ~ as.character({{x}})
+  )
+  )
+
+return(.x)
+}
+
+dingdong(c(1:100))
+
 
 #Oppgave 6.0
 print_all <- function(.data) {
@@ -252,7 +266,7 @@ finn_beste_fylke <- function(.data, year = 2019) {
 }
 
 df2 %>% 
-  finn_beste_fylke(2016) #For lavt snitt fordi det leses inn karakter uten desimal
+  finn_beste_fylke(2016) #For lavt snitt fordi det leses inn karakter uten desimal, hvordan løser jeg dette enkelt?
 
 #Oppgave 10
 lag_plot <- function(.data, col1, col2, fill = "red", theme = theme_classic()) {
@@ -386,25 +400,25 @@ vector %>%
 
 
 
-#Oppgave 19
-if (!require(ranger)) {
-  install.packages("ranger")
-}
+#Oppgave 19, ikke rukket å få til denne
+#if (!require(ranger)) {
+#  install.packages("ranger")
+#}
+#
+#mod_ranger <- ranger(Species ~ ., 
+#                     data = iris, 
+#                     importance = "permutation")
 
-mod_ranger <- ranger(Species ~ ., 
-                     data = iris, 
-                     importance = "permutation")
 
 
+#plot_importance <- function(.data) {
+#  df_temp <- as.data.frame(ranger::importance(.data))
+#  df_temp %>% 
+#    ggplot(aes(x = index, y = importance(mod_ranger), color = {{fill}})) + 
+#    geom_bar("identity")
+#}
 
-plot_importance <- function(.data) {
-  df_temp <- as.data.frame(ranger::importance(.data))
-  df_temp %>% 
-    ggplot(aes(x = index, y = importance(mod_ranger), color = {{fill}})) + 
-    geom_bar("identity")
-}
-
-plot_importance(mod_ranger)
+#plot_importance(mod_ranger)
 
 
 
