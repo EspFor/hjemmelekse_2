@@ -7,11 +7,29 @@ library(tidyr)
 library(ranger)
 library(ggplot2)
 
+# JP:
+# Hei Espen. Mye bra i denne besvarelsen! Jeg har lagt inn noen kommentarer under
+# merket med "JP". Håper feedbacken er nyttig :-)
+
+# JP:
+# Kommentar til bruk av github: 
+# Bra at du har committet underveis. Dersom du skal bruke git på prosjekt
+# anbefaler jeg deg å lese tips til gode commit messages i slidene fra sesjon 2. 
+
+
+# JP: 
+# Man trenger ikke sette knitr-options for vanlige R-script, dette er kun 
+# relevant R Markdown-filer. 
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 x <- c(1, 2, 3, 10)
 y <- c(4, 5, 6, 23)
 
+
+# JP:
+# Fint at du har med input-checks, men husk at "if" bare sjekker ett argument. 
+# Dersom man sender inn vektorer bør man bruke "if(any(is.na(x)))". 
+# 'any(x)' er TRUE dersom minst én x er TRUE. 
 
 #Oppgave 2.1
 sum_two_num <- function(x = NA, y = NA) {
@@ -91,6 +109,21 @@ partall <- function(x = NA) {
     }
 }
 
+
+# JP: 
+# Her trenger man ikke bruke if/else eller return. `x %% 2 == 0` vil uansett gi 
+# enten TRUE eller FALSE. Med andre ord: `x %% 2 == 0` vil gi samme svar som: 
+# 
+# if((x %% 2) == 0){
+#   return(TRUE)
+# } 
+# else{
+#   return(FALSE)
+# }
+# 
+# I tillegg er `x %% 2 == 0` vektorisert, men ikke når den benyttes inne i if().
+
+
 partall(3)
 partall(4)
 
@@ -100,6 +133,14 @@ partall(4)
 
 #Ved en if setter vi verdien/gjøre en handling hvis if-condition er sann, mens ved ifelse kan vi også indikere verdi/handling ved false.
 #Bruker ifelse når det har en verdi å returnere en verdi/gjøre en handling også ved if=False
+
+# JP: 
+# Det du sier her er riktig, men dette løses lett ved å bruke if() og else() i kombinasjon. 
+# Hovedforskjellen mellom de to er at ifelse er vektorisert (sender man inn x-rader input får man ut x-rader). 
+# if() er ikke vektorisert, og sjekker derfor bare første argumentet av en vektor. 
+# If() og else() brukes som for å styre hva et script / en funksjon gjør, mens 
+# ifelse brukes oftere til analyseformål, f.eks. til å transformere en variabel. 
+
 
 #Oppgave 2.9
 #Funksjonen vil ikke fungere (som ønsket) fordi R ikke forstår at "variabel" er en variabel, men tror det er et objekt.
@@ -129,8 +170,11 @@ god_dag <-  function(time = lubridate::now()) {
   
 }
 
-ettermiddag <- as_datetime("20019-09-18 16:15:01")
+ettermiddag <- as_datetime("2019-09-18 16:15:01")
 god_dag(ettermiddag)
+
+# JP: 
+# Strålende løsning!
 
 #Oppgave 4.0
 celsius_to_fahrenheit <-  function(celsius = NA) {
@@ -160,6 +204,14 @@ fahrenheit_to_celsius(celsius_to_fahrenheit(23))
 #Oppgave 5.0
 
 #Denne får jeg ikke helt til. Usikker på hvordan jeg best henviser til kol.
+
+# JP:
+# I og med at x er en vektor (og ikke en data.frame eller matrix) så kan man ikke 
+# bruke "as.data.frame(x). Derimot kan man bruke "data.frame(kolonnenavn = x)". 
+# Dette lager en data.frame hvor x er eneste variabel og antall rader alltid er lik 
+# lengden til x. Da kan man henvise til kolonnenavn etterpå i case_when. Alternativt
+# kan man bruke case_when direkte. Se løsningsforslaget for et eksempel.
+
 dingdong <-  function(x){
   
 .df = as.data.frame(x)
@@ -179,6 +231,11 @@ return(.df)
 dingdong(c(1:100))
 
 #Oppgave 6.0
+
+# JP: 
+# Denne funket ikke hos meg. Jeg tror du kan fikse det ved å sette "n = " inn i 
+# print, slik: print(n = nrow(.data))
+
 print_all <- function(.data) {
   .data %>% 
     print(nrow(.data))
@@ -210,6 +267,10 @@ pw_generator <- function(n = 10) {
 
 pw_generator(10)
 
+# JP:
+# For meg lager denne 10 passord med lengde 9, og ikke ett passord med lengde 10. 
+# Du er inne på mye riktig her. Se løsningsforslaget for et mulig løsning. 
+
 #Oppgave 8.1
 antall_na <- function(.data) {
   sum(is.na(.data))
@@ -223,6 +284,13 @@ prosent_na <- function(.data) {
 
 prosent_na(airquality)
 
+# JP:
+# Kult med bruk av scales::percent()! Vær obs på at scales-funksjonene funker
+# best til printing eller bruk i ggplots, men ikke til å regne videre på, siden 
+# output er en character. Denne ville med andre ord gjort seg visuelt, men ikke 
+# nødvendigvis som en del av videre analyse.
+
+
 #Oppgave 8.2
 map_df(airquality, .f = antall_na)
 map_df(airquality, .f = prosent_na)
@@ -231,6 +299,10 @@ map_df(airquality, .f = prosent_na)
 file_paths <- fs::dir_ls(path = "./Karakterer_per_fylke", regexp = "\\.csv$")
 
 df <- map_df(file_paths, .f = read_csv(col_names = TRUE))
+# JP:
+# Denne funket ikke for meg. Ser ut til at du har glemt "~" framfor read_csv, og 
+# å markere med et punktum hva som skal itereres over. 
+
 
 colnames(df)[1] = "Verdi"
 
@@ -255,6 +327,12 @@ finn_beste_fylke <- function(.data, year = 2019) {
 
 df2 %>% 
   finn_beste_fylke(2016) #For lavt snitt fordi det leses inn karakter uten desimal, hvordan løser jeg dette enkelt?
+# JP:
+# Dersom du hadde brukt read_csv2() istedenfor read_csv() hadde dette vært løst. 
+# Du hadde også sluppet mye av databehandlingen. For de fleste CSV-funksjoner
+# finnes det en versjon for ","-separerte filer og en for ";"-seprarerte filer, 
+# ofte ved navn "csv" og "csv2". 
+
 
 #Oppgave 10
 lag_plot <- function(.data, col1, col2, fill = "red", theme = theme_classic()) {
@@ -263,6 +341,12 @@ lag_plot <- function(.data, col1, col2, fill = "red", theme = theme_classic()) {
     geom_point() + 
     {{theme}}
 }
+
+# JP:
+# Bra løst! Men Obs: fill = "red" og {{fill}} fører til at alle punktene får en 
+# annen farge enn rød. Prøv med fill = "blue", dette gir samme resultat. Ggplot behandler
+# dette som en kolonne med kun én verdi når man har det inne i "aes()", og tildeler
+# alle punktene en standardfarge. 
 
 iris %>% 
   lag_plot(Sepal.Length, Sepal.Width, Species, theme_bw())
@@ -336,15 +420,26 @@ prefix_exists <- function(string, prefix) {
   substr(string, 1, nchar(prefix)) == prefix
 }
 
+# JP: 
+# Funker også på tallvektorer, så kanskje remove_last eller remove_last_element? 
+
 remove_last_chr <- function(x) {
   if (length(x) <= 1) return(NULL)
   x[-length(x)]
 }
 
+
 change_length_vector <- function(x, y) {
   rep(y, length.out = length(x))
 }
 
+
+# JP:
+# Du er inne på hva funksjonen gjør, men forsøk å holde funksjonsnavn kortere 
+# enn dette. Dersom man ikke klarer å uttrykke hva funksjonen gjør på få ord
+# er det et tegn på at man enten har misforstått funksjonen, eller hvis man har 
+# laget den selv, at funksjonen gjør for mange ting og bør brytes ned i flere 
+# mindre funksjoner. 
 laveste_verdier_av_siste_vektor_og_storste_av_de_to_forste_vektorene <- function(x, y, z) {
   pmin(pmax(x, y), z)
 }
@@ -386,6 +481,8 @@ vector <- c(as.integer(seq(1, 10, by = 1)))
 vector %>%
   map_int(.f = powerup)
 
+# JP:
+# God løsning å lage egen funksjon for dette. 
 
 
 #Oppgave 19, ikke rukket å få til denne
